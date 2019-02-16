@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {Evaluator} from '../lib/evaluator';
+import Evaluator from '../lib/evaluator';
 
 const evaluator = new Evaluator();
 

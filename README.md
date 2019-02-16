@@ -31,6 +31,8 @@ Evaluates an expression.
 #### Examples
 
 ```js
+import Evaluator from 'evaluator.js';
+
 const evaluator = new Evaluator();
 
 evaluator.evaluate('4 + 2 * 8');         // 20
