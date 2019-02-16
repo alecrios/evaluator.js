@@ -1,6 +1,6 @@
 {
   "name": "evaluator.js",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "JavaScript library for working with mathematical expressions",
   "main": "lib/evaluator.js",
   "scripts": {
