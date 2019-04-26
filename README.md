@@ -7,7 +7,7 @@ Example: the expression `6 + (8 / 4) ^ 2 + pi` will yield `13.14159265`.
 ## Installation
 
 ```
-npm install evaluator.js --save
+npm install evaluator.js
 ```
 
 ## Usage
@@ -22,11 +22,23 @@ Evaluates an expression.
 
 #### Arguments
 
-**expression (_String_)**: The expression to evaluate.
+- **expression (_String_)**: The expression to evaluate.
+
+#### Exceptions
+
+* **No input**: The expression string is empty.
+* **No valid tokens**: The expression string does not have any valid tokens.
+* **Invalid token [token]**: The token is not supported.
+* **Misused operator: [token]**: The operator is not in a valid context.
+* **Mismatched parentheses**: The expression contains more of one type of parenthesis than the other.
+* **No operations**: The expression string does not have any operations.
+* **Missing operand**: The expression contains an operator with an insufficient number of operands.
+* **Missing operator**: The expression contains operands without an operator.
+* **Division by zero**: The expression contains a division by zero.
 
 #### Returns
 
-**(_String_)**: The result of the expression.
+- **(_String_)**: The result of the expression.
 
 #### Examples
 
@@ -44,18 +56,6 @@ evaluator.evaluate('-8 - -3');           // -5
 evaluator.evaluate('((6 - 9) / 5) * 9'); // -5.4
 evaluator.evaluate('-e ^ -2');           // -0.13533528
 ```
-
-#### Errors
-
-* **No input**: The expression string is empty.
-* **No valid tokens**: The expression string does not have any valid tokens.
-* **Invalid token [token]**: The token is not supported.
-* **Misused operator: [token]**: The operator is not in a valid context.
-* **Mismatched parentheses**: The expression contains more of one type of parenthesis than the other.
-* **No operations**: The expression string does not have any operations.
-* **Missing operand**: The expression contains an operator with an insufficient number of operands.
-* **Missing operator**: The expression contains operands without an operator.
-* **Division by zero**: The expression contains a division by zero.
 
 ## Reference
 
