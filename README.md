@@ -1,8 +1,10 @@
-# Evaluator
+# Evaluator.js
 
-Evaluator is a small, zero-dependency library for evaluating mathematical expressions. Given an expression written in infix notation, Evaluator will parse the string, convert the expression to postfix notation, then resolve the result. All major operators and constants are supported.
+Evaluator.js is a tiny (~2.6kB), zero-dependency module for evaluating mathematical expressions.
 
-Example: the expression `6 + (8 / 4) ^ 2 + pi` will yield `13.14159265`.
+All major operations and constants are supported. For example, the expression `-6 + (8 / (4 * 10)) ^ 2 + pi` will yield `-2.81840735`. Additionally, Evaluator.js intelligently reports invalid syntax, such as a misused operator or a missing operand. For example, the expression `4 * (3 + 2) + 1)` will throw the error `Mismatched parenthesis`.
+
+Evaluator.js is used by a desktop calculator application of the same name. See a [live demo](https://evaluator.link) on the website.
 
 ## Installation
 
@@ -36,16 +38,16 @@ export default function (expression: string): number;
 ## Examples
 
 ```js
-import evaluator from 'evaluator.js';
+import evaluate from 'evaluator.js';
 
-evaluator('4 + 2 * 8');         // 20
-evaluator('8 / (2 + 2.75)');    // 1.68421053
-evaluator('194 % 5');           // 4
-evaluator('8 ^ 2 / 0.5');       // 128
-evaluator('pi / 1.3');          // 2.41660973
-evaluator('-8 - -3');           // -5
-evaluator('((6 - 9) / 5) * 9'); // -5.4
-evaluator('-e ^ -2');           // -0.13533528
+evaluate('4 + 2 * 8');         // 20
+evaluate('8 / (2 + 2.75)');    // 1.68421053
+evaluate('194 % 5');           // 4
+evaluate('8 ^ 2 / 0.5');       // 128
+evaluate('pi / 1.3');          // 2.41660973
+evaluate('-8 - -3');           // -5
+evaluate('((6 - 9) / 5) * 9'); // -5.4
+evaluate('-e ^ -2');           // -0.13533528
 ```
 
 ## Reference

@@ -1,7 +1,7 @@
 {
 	"name": "evaluator.js",
 	"version": "3.0.0",
-	"description": "JavaScript library for working with mathematical expressions",
+	"description": "Evaluates mathematical expressions",
 	"source": "src/index.ts",
 	"types": "dist/index.d.ts",
 	"main": "dist/evaluator.js",
