@@ -2,7 +2,7 @@
 
 Evaluator.js is a tiny (~2.6kB), zero-dependency module for evaluating mathematical expressions.
 
-All major operations and constants are supported. For example, the expression `-6 + (8 / (4 * 10)) ^ 2 + pi` will yield `-2.81840735`. Additionally, Evaluator.js intelligently reports invalid syntax, such as a misused operator or a missing operand. For example, the expression `4 * (3 + 2) + 1)` will throw the error `Mismatched parenthesis`.
+All major operations and constants are supported. For example, the expression `-6 + (8 / (4 * 10)) ^ 2 + pi` will yield `-2.81840735`. Additionally, Evaluator.js intelligently reports invalid syntax, such as a misused operator or a missing operand. For example, the expression `4 * (3 + 2) + 1)` will throw the error `Mismatched parentheses`.
 
 Evaluator.js is used by a desktop calculator application of the same name. See a [live demo](https://evaluator.link) on the website.
 
