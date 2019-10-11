@@ -1,6 +1,6 @@
-# evaluator.js
+# Evaluator
 
-Evaluator is built for evaluating mathematical expressions. Given an expression written in infix notation, Evaluator will parse the string, convert the expression to postfix notation, then resolve the result. All major operators and constants are supported.
+Evaluator is a small, zero-dependency library for evaluating mathematical expressions. Given an expression written in infix notation, Evaluator will parse the string, convert the expression to postfix notation, then resolve the result. All major operators and constants are supported.
 
 Example: the expression `6 + (8 / 4) ^ 2 + pi` will yield `13.14159265`.
 
@@ -10,56 +10,47 @@ Example: the expression `6 + (8 / 4) ^ 2 + pi` will yield `13.14159265`.
 npm install evaluator.js
 ```
 
-## Usage
+## API
 
-### Evaluator.evaluate()
-
-```js
-Evaluator.evaluate(expression)
+``` ts
+/**
+ * Takes a string and evaluates the result.
+ *
+ * @param {string} expression The string.
+ *
+ * @throws {Error} No input.
+ * @throws {Error} No valid tokens.
+ * @throws {Error} Misused operator: <token>.
+ * @throws {Error} Mismatched parentheses.
+ * @throws {Error} Invalid token: <token>.
+ * @throws {Error} No operations.
+ * @throws {Error} Missing operand.
+ * @throws {Error} Division by zero.
+ * @throws {Error} Missing operator.
+ *
+ * @returns {number} The result.
+ */
+export default function (expression: string): number;
 ```
 
-Evaluates an expression.
-
-#### Arguments
-
-- **expression (_String_)**: The expression to evaluate.
-
-#### Exceptions
-
-* **No input**: The expression string is empty.
-* **No valid tokens**: The expression string does not have any valid tokens.
-* **Invalid token [token]**: The token is not supported.
-* **Misused operator: [token]**: The operator is not in a valid context.
-* **Mismatched parentheses**: The expression contains more of one type of parenthesis than the other.
-* **No operations**: The expression string does not have any operations.
-* **Missing operand**: The expression contains an operator with an insufficient number of operands.
-* **Missing operator**: The expression contains operands without an operator.
-* **Division by zero**: The expression contains a division by zero.
-
-#### Returns
-
-- **(_String_)**: The result of the expression.
-
-#### Examples
+## Examples
 
 ```js
-import Evaluator from 'evaluator.js';
+import evaluator from 'evaluator.js';
 
-const evaluator = new Evaluator();
-
-evaluator.evaluate('4 + 2 * 8');         // 20
-evaluator.evaluate('8 / (2 + 2.75)');    // 1.68421053
-evaluator.evaluate('194 % 5');           // 4
-evaluator.evaluate('8 ^ 2 / 0.5');       // 128
-evaluator.evaluate('pi / 1.3');          // 2.41660973
-evaluator.evaluate('-8 - -3');           // -5
-evaluator.evaluate('((6 - 9) / 5) * 9'); // -5.4
-evaluator.evaluate('-e ^ -2');           // -0.13533528
+evaluator('4 + 2 * 8');         // 20
+evaluator('8 / (2 + 2.75)');    // 1.68421053
+evaluator('194 % 5');           // 4
+evaluator('8 ^ 2 / 0.5');       // 128
+evaluator('pi / 1.3');          // 2.41660973
+evaluator('-8 - -3');           // -5
+evaluator('((6 - 9) / 5) * 9'); // -5.4
+evaluator('-e ^ -2');           // -0.13533528
 ```
 
 ## Reference
 
-### Supported Operators
+### Operators
 
 | Operator | Operation      |
 |:-------- |:-------------- |
@@ -71,7 +62,7 @@ evaluator.evaluate('-e ^ -2');           // -0.13533528
 | `%`      | Modulo         |
 | `(`, `)` | Grouping       |
 
-### Supported Constants
+### Constants
 
 | Constant | Value         |
 |:-------- |:------------- |
