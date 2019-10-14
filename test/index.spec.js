@@ -328,6 +328,16 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'subtract(10, add(3, divide(9, multiply(1, sqrt(add(1, 1 + 7)))))) + 1', result: 5 },
 		{ string: 'pow (3, 2)', result: 9 },
 		{ string: 'min(3, 7, 2, 11, 17, 1, 20)', result: 1 },
+		{ string: 'sum(5)', result: 5 },
+		{ string: 'sum(-2)', result: -2 },
+		{ string: 'sum(5, 10)', result: 15 },
+		{ string: 'sum(5, 10, 50)', result: 65 },
+		{ string: 'sum(5, 10, 50, -5)', result: 60 },
+		{ string: 'sum(5, 10, 50, -5, sqrt(9))', result: 63 },
+		{ string: 'sum(-5, 2)', result: -3 },
+		{ string: 'sum(5, -2)', result: 3 },
+		{ string: 'add(4, sum(2, 3, 4))', result: 13 },
+		{ string: 'subtract(-4, sum(-2, -3, sqrt(16)))', result: -3 },
 	];
 
 	tests.forEach((test) => {
@@ -388,6 +398,7 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'subtract + 2', error: 'Misused function: SUBTRACT' },
 		{ string: '3 / subtract', error: 'Insufficient arguments for function: SUBTRACT' },
 		{ string: 'pow(3', error: 'Mismatched parentheses' },
+		{ string: 'sum()', error: 'Insufficient arguments for function: SUM' },
 	];
 
 	errorTests.forEach((test) => {
