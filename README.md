@@ -89,18 +89,18 @@ evaluate('-e ^ -2');           // -0.13533528
 - `ASINH(x)` - Returns the hyperbolic arcsine of a number.
 - `ATAN(x)` - Returns the arctangent of a number.
 - `ATANH(x)` - Returns the hyperbolic arctangent of a number.
-- `ATAN2(y, x)` - Returns the arctangent of the quotient of its arguments.
+- `ATAN2(y, x)` - Returns the arctangent of the quotient of the arguments.
 - `CBRT(x)` - Returns the cube root of a number.
 - `CEIL(x)` - Returns the smallest integer greater than or equal to a number.
 - `COS(x)` - Returns the cosine of a number.
 - `COSH(x)` - Returns the hyperbolic cosine of a number.
 - `DIVIDE(x, y)` - Returns the quotient of two numbers.
-- `EXP(x)` - Returns E^x, where x is the argument, and E is Euler's constant.
+- `EXP(x)` - Returns E to the power of x.
 - `EXPM1(x)` - Returns subtracting 1 from EXP(x).
 - `FLOOR(x)` - Returns the largest integer less than or equal to a number.
-- `HYPOT(x[, y[, ...]])` - Returns the square root of the sum of squares of its arguments.
+- `HYPOT(x[, y[, ...]])` - Returns the square root of the sum of squares of the arguments.
 - `LOG(x)` - Returns the natural logarithm of a number.
-- `LOG1P(x)` - Returns the natural logarithm of 1 + x for a number x.
+- `LOG1P(x)` - Returns the natural logarithm of 1 + x.
 - `LOG10(x)` - Returns the base 10 logarithm of a number.
 - `LOG2(x)` - Returns the base 2 logarithm of a number.
 - `MAX(x[, y[, ...]])` - Returns the largest of one or more numbers.
