@@ -340,6 +340,18 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'subtract(-4, sum(-2, -3, sqrt(16)))', result: -3 },
 		{ string: 'sqrt(4 ^ -2)', result: 0.25 },
 		{ string: 'sum(2^2, -2, 2 * 2, - -2, -(2), - (-2), (2)) ^ 2', result: 100 },
+		{ string: 'mean(24)', result: 24 },
+		{ string: 'mean(3, 9, 11, 4.5, 8.1, 10.35, 2.93, 6, 10, 4.5, 11, 29, 11)', result: 9.26 },
+		{ string: 'mean(18, 9, 0.25, 100.60, 40, pi)', result: 28.49859878 },
+		{ string: 'mean(40, -6, -19.2, 0, 50.1, 204.006, -4.5)', result: 37.77228571 },
+		{ string: 'acos(-1)', result: 3.14159265 },
+		{ string: 'acos(0)', result: 1.57079633 },
+		{ string: 'acos(-2)', result: NaN },
+		{ string: 'acos(-2) + 7', result: NaN },
+		{ string: 'atanh(0)', result: 0 },
+		{ string: 'atanh(-1)', result: -Infinity },
+		{ string: 'atanh(-1) + 4', result: -Infinity },
+		{ string: 'hypot(3, 4, 5)', result: 7.07106781 },
 	];
 
 	tests.forEach((test) => {
