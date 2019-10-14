@@ -1,34 +1,13 @@
-const symbols = {
-	'^': { infix: 'EXP' },
-	'*': { infix: 'MUL' },
-	'/': { infix: 'DIV' },
-	'%': { infix: 'MOD' },
-	'+': { infix: 'ADD', prefix: 'POS' },
-	'-': { infix: 'SUB', prefix: 'NEG' },
-};
-
-const operators = {
-	'EXP': { precedence: 4, associativity: 'right', method: (a, b) => a ** b },
-	'POS': { precedence: 3, associativity: 'right', method: (a) => a },
-	'NEG': { precedence: 3, associativity: 'right', method: (a) => -a },
-	'MUL': { precedence: 2, associativity: 'left', method: (a, b) => a * b },
-	'DIV': { precedence: 2, associativity: 'left', method: (a, b) => a / b },
-	'MOD': { precedence: 2, associativity: 'left', method: (a, b) => a % b },
-	'ADD': { precedence: 1, associativity: 'left', method: (a, b) => a + b },
-	'SUB': { precedence: 1, associativity: 'left', method: (a, b) => a - b },
-};
-
-const constants = {
-	'E': Math.E,
-	'PI': Math.PI,
-};
+import { symbols, operators, constants, functions } from './config';
 
 const isSymbol = (token: string): boolean => Object.keys(symbols).includes(token);
 const isOperator = (token: string): boolean => Object.keys(operators).includes(token);
+const isFunction = (token: string): boolean => Object.keys(functions).includes(token);
 const isConstant = (token: string): boolean => Object.keys(constants).includes(token);
 const isNumber = (token: string): boolean => /(\d+\.\d*)|(\d*\.\d+)|(\d+)/.test(token);
 const isOpenParenthesis = (token: string): boolean => /\(/.test(token);
 const isCloseParenthesis = (token: string): boolean => /\)/.test(token);
+const isComma = (token: string): boolean => /,/.test(token);
 const isWhitespace = (token: string): boolean => /\s/.test(token);
 
 const round = (number: number, precision: number): number => {
@@ -98,6 +77,7 @@ function parse(expression: string): string[] {
  * @throws {Error} Misused operator: <token>.
  * @throws {Error} Mismatched parentheses.
  * @throws {Error} Invalid token: <token>.
+ * @throws {Error} Insufficient arguments for function: <token>.
  *
  * @returns {string[]} The array of tokens in postfix notation.
  */
@@ -107,9 +87,24 @@ function convert(infixExpression: string[]): string[] {
 	}
 
 	const operatorStack = [];
+	const arityStack = [];
 	const postfixExpression = [];
+	let functionIsNewlyDeclared = false;
 
 	infixExpression.forEach((token, index) => {
+		if (functionIsNewlyDeclared && !isOpenParenthesis(token)) {
+			throw Error(`Misused function: ${operatorStack[operatorStack.length - 1]}`);
+		}
+
+		functionIsNewlyDeclared = false;
+
+		if (isFunction(token)) {
+			functionIsNewlyDeclared = true;
+			operatorStack.push(token);
+			arityStack.push(1);
+			return;
+		}
+
 		if (isNumber(token)) {
 			postfixExpression.push(parseFloat(token));
 			return;
@@ -141,6 +136,20 @@ function convert(infixExpression: string[]): string[] {
 			return;
 		}
 
+		if (isComma(token)) {
+			arityStack[arityStack.length - 1] += 1;
+
+			while (!isOpenParenthesis(operatorStack[operatorStack.length - 1])) {
+				if (!operatorStack.length) {
+					throw Error('Invalid token: ,');
+				}
+
+				postfixExpression.push(operatorStack.pop());
+			}
+
+			return;
+		}
+
 		if (isCloseParenthesis(token)) {
 			while (!isOpenParenthesis(operatorStack[operatorStack.length - 1])) {
 				if (!operatorStack.length) {
@@ -151,6 +160,18 @@ function convert(infixExpression: string[]): string[] {
 			}
 
 			operatorStack.pop();
+
+			if (isFunction(operatorStack[operatorStack.length - 1])) {
+				const functionName = operatorStack[operatorStack.length - 1];
+				const argumentCount = arityStack.pop();
+
+				if (argumentCount < functions[functionName].length) {
+					throw Error(`Insufficient arguments for function: ${functionName}`);
+				}
+
+				postfixExpression.push(`${operatorStack.pop()}:${argumentCount}`);
+			}
+
 			return;
 		}
 
@@ -176,9 +197,10 @@ function convert(infixExpression: string[]): string[] {
  * @param {string[]} postfixExpression The array of tokens in postfix notation.
  *
  * @throws {Error} No operations.
- * @throws {Error} Missing operand.
+ * @throws {Error} Insufficient arguments for function: <token>.
+ * @throws {Error} Insufficient operands for operator: <token>.
  * @throws {Error} Division by zero.
- * @throws {Error} Missing operator.
+ * @throws {Error} Insufficient operators.
  *
  * @returns {number} The result.
  */
@@ -190,6 +212,20 @@ function resolve(postfixExpression: string[]): number {
 	const evaluationStack = [];
 
 	postfixExpression.forEach((token) => {
+		if (typeof token === 'string' && isFunction(token.split(':')[0])) {
+			const [functionName, argumentCount] = token.split(':');
+			const fn = functions[functionName];
+
+			if (fn.length && evaluationStack.length < fn.length) {
+				throw Error(`Insufficient arguments for function: ${token}`);
+			}
+
+			// const result = fn(...evaluationStack.splice(-fn.length));
+			const result = fn.length ? fn(...evaluationStack.splice(-fn.length)) : fn(...evaluationStack.splice(-argumentCount));
+			evaluationStack.push(result);
+			return;
+		}
+
 		if (isNumber(token)) {
 			evaluationStack.push(token);
 			return;
@@ -203,10 +239,10 @@ function resolve(postfixExpression: string[]): number {
 		const operator = operators[token];
 
 		if (evaluationStack.length < operator.method.length) {
-			throw Error('Missing operand');
+			throw Error(`Insufficient operands for operator: ${operator.name}`);
 		}
 
-		if (token === 'DIV' && evaluationStack[1] === 0) {
+		if (token === '_DIV' && evaluationStack[1] === 0) {
 			throw Error('Division by zero');
 		}
 
@@ -215,7 +251,7 @@ function resolve(postfixExpression: string[]): number {
 	});
 
 	if (evaluationStack.length > 1) {
-		throw Error('Missing operator');
+		throw Error('Insufficient operators');
 	}
 
 	const reduction = evaluationStack[0];
@@ -235,9 +271,10 @@ function resolve(postfixExpression: string[]): number {
  * @throws {Error} Mismatched parentheses.
  * @throws {Error} Invalid token: <token>.
  * @throws {Error} No operations.
- * @throws {Error} Missing operand.
+ * @throws {Error} Insufficient arguments for function: <token>.
+ * @throws {Error} Insufficient operands for operator: <token>.
  * @throws {Error} Division by zero.
- * @throws {Error} Missing operator.
+ * @throws {Error} Insufficient operators.
  *
  * @returns {number} The result.
  */

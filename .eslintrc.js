@@ -28,7 +28,12 @@ module.exports = {
 		'operator-assignment': 0,
 		'prefer-destructuring': 0,
 		'quote-props': ['warn', 'consistent'],
-		'@typescript-eslint/explicit-function-return-type': ['warn', { 'allowExpressions': true }],
+		'object-curly-newline': ['warn', {
+			'ObjectExpression': {'multiline': true, 'consistent': true},
+			'ObjectPattern': {'multiline': true, 'consistent': true},
+			'ImportDeclaration': {'multiline': true, 'consistent': true},
+			'ExportDeclaration': {'multiline': true, 'consistent': true}
+		}],
 	},
 	'settings': {
 		'import/resolver': {

@@ -62,6 +62,10 @@ describe('Evaluator.parse()', () => {
 	it('distinguish words from numbers without whitespace', () => {
 		expect(parse('a0Bc12DeF.3gHiJ4.kLmNo5.6PqRsTu7.89VwXyZaB01.2cDeFgHiJ45.67')).to.eql(['A', '0', 'BC', '12', 'DEF', '.3', 'GHIJ', '4.', 'KLMNO', '5.6', 'PQRSTU', '7.89', 'VWXYZAB', '01.2', 'CDEFGHIJ', '45.67']);
 	});
+
+	it('identify function components', () => {
+		expect(parse('sqrt(16) min(4, 7, -2) sin(10)')).to.eql(['SQRT', '(', '16', ')', 'MIN', '(', '4', ',', '7', ',', '-', '2', ')', 'SIN', '(', '10', ')']);
+	});
 });
 
 describe('Evaluator.convert()', () => {
@@ -121,25 +125,33 @@ describe('Evaluator.convert()', () => {
 	});
 
 	it('process infix operators', () => {
-		expect(convert(['32', '^', '10'])).to.eql([32, 10, 'EXP']);
-		expect(convert(['21', '*', '7'])).to.eql([21, 7, 'MUL']);
-		expect(convert(['8', '/', '2'])).to.eql([8, 2, 'DIV']);
-		expect(convert(['903', '%', '7'])).to.eql([903, 7, 'MOD']);
-		expect(convert(['5', '+', '54'])).to.eql([5, 54, 'ADD']);
-		expect(convert(['40', '-', '0'])).to.eql([40, 0, 'SUB']);
-		expect(convert(['1', '+', '15', '/', '2'])).to.eql([1, 15, 2, 'DIV', 'ADD']);
-		expect(convert(['23', '*', '3', '-', '212'])).to.eql([23, 3, 'MUL', 212, 'SUB']);
+		expect(convert(['32', '^', '10'])).to.eql([32, 10, '_POW']);
+		expect(convert(['21', '*', '7'])).to.eql([21, 7, '_MUL']);
+		expect(convert(['8', '/', '2'])).to.eql([8, 2, '_DIV']);
+		expect(convert(['903', '%', '7'])).to.eql([903, 7, '_MOD']);
+		expect(convert(['5', '+', '54'])).to.eql([5, 54, '_ADD']);
+		expect(convert(['40', '-', '0'])).to.eql([40, 0, '_SUB']);
+		expect(convert(['1', '+', '15', '/', '2'])).to.eql([1, 15, 2, '_DIV', '_ADD']);
+		expect(convert(['23', '*', '3', '-', '212'])).to.eql([23, 3, '_MUL', 212, '_SUB']);
 	});
 
 	it('process prefix operators', () => {
-		expect(convert(['+'])).to.eql(['POS']);
-		expect(convert(['+', '2'])).to.eql([2, 'POS']);
-		expect(convert(['3', '-', '+', '2'])).to.eql([3, 2, 'POS', 'SUB']);
-		expect(convert(['2', '-', '+', '+', '2'])).to.eql([2, 2, 'POS', 'POS', 'SUB']);
-		expect(convert(['-'])).to.eql(['NEG']);
-		expect(convert(['-', '4'])).to.eql([4, 'NEG']);
-		expect(convert(['1', '+', '-', '7'])).to.eql([1, 7, 'NEG', 'ADD']);
-		expect(convert(['5', '+', '-', '-', '0'])).to.eql([5, 0, 'NEG', 'NEG', 'ADD']);
+		expect(convert(['+'])).to.eql(['_POS']);
+		expect(convert(['+', '2'])).to.eql([2, '_POS']);
+		expect(convert(['3', '-', '+', '2'])).to.eql([3, 2, '_POS', '_SUB']);
+		expect(convert(['2', '-', '+', '+', '2'])).to.eql([2, 2, '_POS', '_POS', '_SUB']);
+		expect(convert(['-'])).to.eql(['_NEG']);
+		expect(convert(['-', '4'])).to.eql([4, '_NEG']);
+		expect(convert(['1', '+', '-', '7'])).to.eql([1, 7, '_NEG', '_ADD']);
+		expect(convert(['5', '+', '-', '-', '0'])).to.eql([5, 0, '_NEG', '_NEG', '_ADD']);
+	});
+
+	it('process functions', () => {
+		expect(convert(['ADD', '(', '5', ',', '1', ')'])).to.eql([5, 1, 'ADD:2']);
+		expect(convert(['SUBTRACT', '(', '14', ',', '2', ')'])).to.eql([14, 2, 'SUBTRACT:2']);
+		expect(convert(['MULTIPLY', '(', '4', ',', '2', ')', '+', 'DIVIDE', '(', '9', ',', '3', ')'])).to.eql([4, 2, 'MULTIPLY:2', 9, 3, 'DIVIDE:2', '_ADD']);
+		expect(convert(['SQRT', '(', '50', '/', '2', ')'])).to.eql([50, 2, '_DIV', 'SQRT:1']);
+		expect(convert(['SQRT', '(', 'ADD', '(', '4', ',', '2', ')', '+', 'ADD', '(', '4', '/', '2', ',', '41', ')', ')'])).to.eql([4, 2, 'ADD:2', 4, 2, '_DIV', 41, 'ADD:2', '_ADD', 'SQRT:1']);
 	});
 });
 
@@ -148,52 +160,59 @@ describe('Evaluator.resolve()', () => {
 		expect(() => resolve([])).to.throw(Error, 'No operations');
 	});
 
-	it('throw error for missing operands', () => {
-		expect(() => resolve([2, 'EXP'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([41, 'MUL'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([1.7, 'DIV'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([7, 'MOD'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([3, 'ADD'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([13, 'SUB'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([3, 4, 'SUB', 'EXP'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([13, 76, 'EXP', 'MUL'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([0, 215, 'ADD', 'DIV'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([43, 4, 'ADD', 'MOD'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([67, 1, 'MOD', 'ADD'])).to.throw(Error, 'Missing operand');
-		expect(() => resolve([7, 79, 'MUL', 'SUB'])).to.throw(Error, 'Missing operand');
+	it('throw error for insufficient function arguments', () => {
+		expect(() => resolve(['SQRT'])).to.throw(Error, 'Insufficient arguments for function: SQRT');
+		expect(() => resolve(['ADD'])).to.throw(Error, 'Insufficient arguments for function: ADD');
+		expect(() => resolve([8, 'MULTIPLY'])).to.throw(Error, 'Insufficient arguments for function: MULTIPLY');
+		expect(() => resolve([4, 'SQRT', 'MULTIPLY'])).to.throw(Error, 'Insufficient arguments for function: MULTIPLY');
 	});
 
-	it('throw error for missing operators', () => {
-		expect(() => resolve([2, 4])).to.throw(Error, 'Missing operator');
-		expect(() => resolve([5, 87, 12])).to.throw(Error, 'Missing operator');
-		expect(() => resolve([1, 2, 2, 'DIV'])).to.throw(Error, 'Missing operator');
-		expect(() => resolve([7, 1, 2, 'EXP'])).to.throw(Error, 'Missing operator');
+	it('throw error for insufficient operands', () => {
+		expect(() => resolve([2, '_POW'])).to.throw(Error, 'Insufficient operands for operator: Power');
+		expect(() => resolve([41, '_MUL'])).to.throw(Error, 'Insufficient operands for operator: Multiply');
+		expect(() => resolve([1.7, '_DIV'])).to.throw(Error, 'Insufficient operands for operator: Divide');
+		expect(() => resolve([7, '_MOD'])).to.throw(Error, 'Insufficient operands for operator: Modulo');
+		expect(() => resolve([3, '_ADD'])).to.throw(Error, 'Insufficient operands for operator: Add');
+		expect(() => resolve([13, '_SUB'])).to.throw(Error, 'Insufficient operands for operator: Subtract');
+		expect(() => resolve([3, 4, '_SUB', '_POW'])).to.throw(Error, 'Insufficient operands for operator: Power');
+		expect(() => resolve([13, 76, '_POW', '_MUL'])).to.throw(Error, 'Insufficient operands for operator: Multiply');
+		expect(() => resolve([0, 215, '_ADD', '_DIV'])).to.throw(Error, 'Insufficient operands for operator: Divide');
+		expect(() => resolve([43, 4, '_ADD', '_MOD'])).to.throw(Error, 'Insufficient operands for operator: Modulo');
+		expect(() => resolve([67, 1, '_MOD', '_ADD'])).to.throw(Error, 'Insufficient operands for operator: Add');
+		expect(() => resolve([7, 79, '_MUL', '_SUB'])).to.throw(Error, 'Insufficient operands for operator: Subtract');
+	});
+
+	it('throw error for insufficient operators', () => {
+		expect(() => resolve([2, 4])).to.throw(Error, 'Insufficient operators');
+		expect(() => resolve([5, 87, 12])).to.throw(Error, 'Insufficient operators');
+		expect(() => resolve([1, 2, 2, '_DIV'])).to.throw(Error, 'Insufficient operators');
+		expect(() => resolve([7, 1, 2, '_POW'])).to.throw(Error, 'Insufficient operators');
 	});
 
 	it('throw error for division by zero', () => {
-		expect(() => resolve([1, 0, 'DIV'])).to.throw(Error, 'Division by zero');
-		expect(() => resolve([3, 7, 'ADD', 0, 'DIV'])).to.throw(Error, 'Division by zero');
+		expect(() => resolve([1, 0, '_DIV'])).to.throw(Error, 'Division by zero');
+		expect(() => resolve([3, 7, '_ADD', 0, '_DIV'])).to.throw(Error, 'Division by zero');
 	});
 
 	it('return result for rpn with single operation', () => {
-		expect(resolve([2, 3, 'EXP'])).to.eql(8);
-		expect(resolve([7, 6, 'MUL'])).to.eql(42);
-		expect(resolve([16, 4, 'DIV'])).to.eql(4);
-		expect(resolve([4, 5, 'ADD'])).to.eql(9);
-		expect(resolve([1, 5, 'SUB'])).to.eql(-4);
-		expect(resolve([7, 'NEG'])).to.eql(-7);
-		expect(resolve([6, 'POS'])).to.eql(6);
+		expect(resolve([2, 3, '_POW'])).to.eql(8);
+		expect(resolve([7, 6, '_MUL'])).to.eql(42);
+		expect(resolve([16, 4, '_DIV'])).to.eql(4);
+		expect(resolve([4, 5, '_ADD'])).to.eql(9);
+		expect(resolve([1, 5, '_SUB'])).to.eql(-4);
+		expect(resolve([7, '_NEG'])).to.eql(-7);
+		expect(resolve([6, '_POS'])).to.eql(6);
 	});
 
 	it('return result for rpn with multiple operations', () => {
-		expect(resolve([7, 3, 2, 'ADD', 'MUL'])).to.eql(35);
-		expect(resolve([3, 'NEG', 9, 'NEG', 'SUB'])).to.eql(6);
-		expect(resolve([5, 8, 'MUL', 6, 'ADD'])).to.eql(46);
-		expect(resolve([3, 3, 'EXP', 'NEG'])).to.eql(-27);
-		expect(resolve([16, 'NEG', 9, 'POS', 'POS', 'POS', 'ADD'])).to.eql(-7);
-		expect(resolve([2, 4, 5, 'EXP', 'MUL', 3, 'ADD'])).to.eql(2051);
-		expect(resolve([3, 12, 4, 'DIV', 'DIV', 5, 'MUL', 1, 'DIV'])).to.eql(5);
-		expect(resolve([10, 4, 'MOD', 8, 'ADD'])).to.eql(10);
+		expect(resolve([7, 3, 2, '_ADD', '_MUL'])).to.eql(35);
+		expect(resolve([3, '_NEG', 9, '_NEG', '_SUB'])).to.eql(6);
+		expect(resolve([5, 8, '_MUL', 6, '_ADD'])).to.eql(46);
+		expect(resolve([3, 3, '_POW', '_NEG'])).to.eql(-27);
+		expect(resolve([16, '_NEG', 9, '_POS', '_POS', '_POS', '_ADD'])).to.eql(-7);
+		expect(resolve([2, 4, 5, '_POW', '_MUL', 3, '_ADD'])).to.eql(2051);
+		expect(resolve([3, 12, 4, '_DIV', '_DIV', 5, '_MUL', 1, '_DIV'])).to.eql(5);
+		expect(resolve([10, 4, '_MOD', 8, '_ADD'])).to.eql(10);
 	});
 });
 
@@ -288,11 +307,92 @@ describe('Evaluator.evaluate()', () => {
 		{ string: '(pi) + (e) - (12)', result: -6.14012552 },
 		{ string: '(((pi + e)))', result: 5.85987448 },
 		{ string: '-pi-e--pi--e', result: 0 },
+		{ string: 'sqrt(16)', result: 4 },
+		{ string: '5 + 12 - sqrt(144) + 2', result: 7 },
+		{ string: '-sqrt(40) + 3.35', result: -2.97455532 },
+		{ string: '(18 - 4) / (sqrt(9))', result: 4.66666667 },
+		{ string: 'sqrt(100 - 51)', result: 7 },
+		{ string: 'sqrt((4 ^ 2) - 7)', result: 3 },
+		{ string: 'add(4, 9)', result: 13 },
+		{ string: 'subtract(16, 20)', result: -4 },
+		{ string: 'pow(4, 2)', result: 16 },
+		{ string: 'add(sqrt(25), 2)', result: 7 },
+		{ string: 'add(add(5, 1), 19) - 5', result: 20 },
+		{ string: 'multiply(3, 4) ^ 2', result: 144 },
+		{ string: 'subtract(4 / 2, 5)', result: -3 },
+		{ string: '(add(4 ^ 2, 10 * sqrt(9))) / 2', result: 23 },
+		{ string: 'subtract(pi, pi)', result: 0 },
+		{ string: 'subtract(pi, (pi * 2) / 2)', result: 0 },
+		{ string: '-add(2, 2) - -subtract(2, 2)', result: -4 },
+		{ string: 'add(multiply(2, 3), subtract(4, divide(6, add(1, 2))))', result: 8 },
+		{ string: 'subtract(10, add(3, divide(9, multiply(1, sqrt(add(1, 1 + 7)))))) + 1', result: 5 },
+		{ string: 'pow (3, 2)', result: 9 },
+		{ string: 'min(3, 7, 2, 11, 17, 1, 20)', result: 1 },
 	];
 
 	tests.forEach((test) => {
 		it(`${test.string} = ${test.result}`, () => {
 			expect(evaluator(test.string)).to.eql(test.result);
+		});
+	});
+
+	const errorTests = [
+		{ string: 'sqrt()', error: 'Insufficient arguments for function: SQRT' },
+		{ string: 'multiply()', error: 'Insufficient arguments for function: MULTIPLY' },
+		{ string: 'add(4)', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'divide(4 - 2)', error: 'Insufficient arguments for function: DIVIDE' },
+		{ string: 'subtract(+)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(6,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(,6)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(,6,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(6,,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(,,6)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(,,6,,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(,,,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'add(', error: 'Mismatched parentheses' },
+		{ string: 'add(,', error: 'Mismatched parentheses' },
+		{ string: 'add(4', error: 'Mismatched parentheses' },
+		{ string: 'add(4,4', error: 'Mismatched parentheses' },
+		{ string: '4,000', error: 'Invalid token: ,' },
+		{ string: '4 + 3 , 2', error: 'Invalid token: ,' },
+		{ string: '71 4', error: 'Insufficient operators' },
+		{ string: 'subtract(16, 2) 4', error: 'Insufficient operators' },
+		{ string: '3 divide(10, 5)', error: 'Insufficient operators' },
+		{ string: 'sqrt(16) add(4, 3)', error: 'Insufficient operators' },
+		{ string: 'add(4, 2) divide(8)', error: 'Insufficient arguments for function: DIVIDE' },
+		{ string: '4 + divide()', error: 'Insufficient arguments for function: DIVIDE' },
+		{ string: '8 add(2, 4)', error: 'Insufficient operators' },
+		{ string: '8 add(2)', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'sqrt(25) add(4)', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'add(4, 9) - add(1, 2) multiply(2)', error: 'Insufficient arguments for function: MULTIPLY' },
+		{ string: 'multiply(sqrt(9))', error: 'Insufficient arguments for function: MULTIPLY' },
+		{ string: 'multiply(add(4))', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'multiply(add(4), 7)', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'multiply(add(4, 7))', error: 'Insufficient arguments for function: MULTIPLY' },
+		{ string: 'add(,sqrt(25))', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'add(,divide(2))', error: 'Insufficient arguments for function: DIVIDE' },
+		{ string: 'add(,divide(2, 4))', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'add(divide(2, 4),)', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'add(divide(2, 4),,,)', error: 'Insufficient arguments for function: ADD' },
+		{ string: '4 + subtract(4, add()', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'divide(9.2, add(sqrt(25)))', error: 'Insufficient arguments for function: ADD' },
+		{ string: 'add', error: 'Insufficient arguments for function: ADD' },
+		{ string: '(multiply)', error: 'Misused function: MULTIPLY' },
+		{ string: '5 divide 4', error: 'Misused function: DIVIDE' },
+		{ string: '2 add 4', error: 'Misused function: ADD' },
+		{ string: 'add(subtract)', error: 'Misused function: SUBTRACT' },
+		{ string: 'add(subtract, 4)', error: 'Misused function: SUBTRACT' },
+		{ string: 'add(subtract(10, 3 add 4), 4)', error: 'Misused function: ADD' },
+		{ string: 'subtract 7 4', error: 'Misused function: SUBTRACT' },
+		{ string: 'subtract + 2', error: 'Misused function: SUBTRACT' },
+		{ string: '3 / subtract', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'pow(3', error: 'Mismatched parentheses' },
+	];
+
+	errorTests.forEach((test) => {
+		it(`${test.string} = ${test.error}`, () => {
+			expect(() => evaluator(test.string)).to.throw(Error, test.error);
 		});
 	});
 });
