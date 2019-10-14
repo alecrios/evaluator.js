@@ -221,7 +221,7 @@ function resolve(postfixExpression: string[]): number {
 	const evaluationStack = [];
 
 	postfixExpression.forEach((token) => {
-		if (typeof token === 'string' && isFunction(token.split(':')[0])) {
+		if (isFunction(String(token).split(':')[0])) {
 			const [functionName, argumentCount] = token.split(':');
 			const fn = functions[functionName];
 			const isVariadic = fn.length === 0;
