@@ -34,11 +34,20 @@ function topOperatorHasPrecedence(operatorStack: string[], currentOperatorName: 
 }
 
 function determineOperator(token: string, previousToken: string): string {
-	if (previousToken === undefined || isOpenParenthesis(previousToken) || isSymbol(previousToken)) {
+	if (
+		previousToken === undefined
+		|| isOpenParenthesis(previousToken)
+		|| isSymbol(previousToken)
+		|| isComma(previousToken)
+	) {
 		return symbols[token].prefix;
 	}
 
-	if (isCloseParenthesis(previousToken) || (isNumber(previousToken) || isConstant(previousToken))) {
+	if (
+		isCloseParenthesis(previousToken)
+		|| (isNumber(previousToken)
+		|| isConstant(previousToken))
+	) {
 		return symbols[token].infix;
 	}
 
@@ -215,13 +224,14 @@ function resolve(postfixExpression: string[]): number {
 		if (typeof token === 'string' && isFunction(token.split(':')[0])) {
 			const [functionName, argumentCount] = token.split(':');
 			const fn = functions[functionName];
+			const isVariadic = fn.length === 0;
+			const requiredArguments = isVariadic ? 1 : fn.length;
 
-			if (fn.length && evaluationStack.length < fn.length) {
+			if (evaluationStack.length < requiredArguments) {
 				throw Error(`Insufficient arguments for function: ${token}`);
 			}
 
-			// const result = fn(...evaluationStack.splice(-fn.length));
-			const result = fn.length ? fn(...evaluationStack.splice(-fn.length)) : fn(...evaluationStack.splice(-argumentCount));
+			const result = fn(...evaluationStack.splice(isVariadic ? -argumentCount : -fn.length));
 			evaluationStack.push(result);
 			return;
 		}
