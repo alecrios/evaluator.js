@@ -56,63 +56,63 @@ evaluate('-e ^ -2');           // -0.13533528
 
 ### Operators
 
-- `+`
-- `-`
-- `*`
-- `/`
-- `^`
-- `%`
-- `(`
-- `)`
-- `,`
+- `+` - Add / Unary Plus
+- `-` - Subtract / Unary Minus
+- `*` - Multiply
+- `/` - Divide
+- `^` - Power
+- `%` - Modulo
+- `(` - Begin Group
+- `)` - End Group
+- `,` - Separate Argument
 
 ### Constants
 
-- `E`
-- `LN2`
-- `LN10`
-- `LOG2E`
-- `LOG10E`
-- `PHI`
-- `PI`
-- `SQRT1_2`
-- `SQRT2`
-- `TAU`
+- `E` - Euler's constant and the base of natural logarithms.
+- `LN2` - Natural logarithm of 2.
+- `LN10` - Natural logarithm of 10.
+- `LOG2E` - Base 2 logarithm of E.
+- `LOG10E` - Base 10 logarithm of E.
+- `PHI` - Golden ratio.
+- `PI` - Ratio of the circumference of a circle to its diameter.
+- `SQRT1_2` - Square root of 1/2.
+- `SQRT2` - Square root of 2.
+- `TAU` - Ratio of the circumference of a circle to its radius.
 
 ### Methods
 
-- `ABS(x)`
-- `ACOS(x)`
-- `ACOSH(x)`
-- `ADD(x, y)`
-- `ASIN(x)`
-- `ASINH(x)`
-- `ATAN(x)`
-- `ATANH(x)`
-- `ATAN2(y, x)`
-- `CBRT(x)`
-- `CEIL(x)`
-- `COS(x)`
-- `COSH(x)`
-- `DIVIDE(x, y)`
-- `EXP(x)`
-- `EXPM1(x)`
-- `FLOOR(x)`
-- `HYPOT(x[, y[, ...]])`
-- `LOG(x)`
-- `LOG1P(x)`
-- `LOG10(x)`
-- `LOG2(x)`
-- `MAX(x[, y[, ...]])`
-- `MEAN(x[, y[, ...]])`
-- `MIN(x[, y[, ...]])`
-- `MOD(x, y)`
-- `MULTIPLY(x, y)`
-- `POW(x, y)`
-- `SIN(x)`
-- `SINH(x)`
-- `SQRT(x)`
-- `SUBTRACT(x, y)`
-- `SUM(x[, y[, ...]])`
-- `TAN(x)`
-- `TANH(x)`
+- `ABS(x)` - Returns the absolute value of a number.
+- `ACOS(x)` - Returns the arccosine of a number.
+- `ACOSH(x)` - Returns the hyperbolic arccosine of a number.
+- `ADD(x, y)` - Returns the total of two numbers.
+- `ASIN(x)` - Returns the arcsine of a number.
+- `ASINH(x)` - Returns the hyperbolic arcsine of a number.
+- `ATAN(x)` - Returns the arctangent of a number.
+- `ATANH(x)` - Returns the hyperbolic arctangent of a number.
+- `ATAN2(y, x)` - Returns the arctangent of the quotient of its arguments.
+- `CBRT(x)` - Returns the cube root of a number.
+- `CEIL(x)` - Returns the smallest integer greater than or equal to a number.
+- `COS(x)` - Returns the cosine of a number.
+- `COSH(x)` - Returns the hyperbolic cosine of a number.
+- `DIVIDE(x, y)` - Returns the quotient of two numbers.
+- `EXP(x)` - Returns E^x, where x is the argument, and E is Euler's constant.
+- `EXPM1(x)` - Returns subtracting 1 from EXP(x).
+- `FLOOR(x)` - Returns the largest integer less than or equal to a number.
+- `HYPOT(x[, y[, ...]])` - Returns the square root of the sum of squares of its arguments.
+- `LOG(x)` - Returns the natural logarithm of a number.
+- `LOG1P(x)` - Returns the natural logarithm of 1 + x for a number x.
+- `LOG10(x)` - Returns the base 10 logarithm of a number.
+- `LOG2(x)` - Returns the base 2 logarithm of a number.
+- `MAX(x[, y[, ...]])` - Returns the largest of one or more numbers.
+- `MEAN(x[, y[, ...]])` - Returns the mean of one or more numbers.
+- `MIN(x[, y[, ...]])` - Returns the smallest of one or more numbers.
+- `MOD(x, y)` - Returns the modulus of two numbers.
+- `MULTIPLY(x, y)` - Returns the product of two numbers.
+- `POW(x, y)` - Returns base to the exponent power.
+- `SIN(x)` - Returns the sine of a number.
+- `SINH(x)` - Returns the hyperbolic sine of a number.
+- `SQRT(x)` - Returns the positive square root of a number.
+- `SUBTRACT(x, y)` - Returns the difference of two numbers.
+- `SUM(x[, y[, ...]])` - Returns the sum of one or more numbers.
+- `TAN(x)` - Returns the tangent of a number.
+- `TANH(x)` - Returns the hyperbolic tangent of a number.
