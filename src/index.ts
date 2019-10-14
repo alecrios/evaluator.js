@@ -68,7 +68,7 @@ function parse(expression: string): string[] {
 		throw Error('No input');
 	}
 
-	const pattern = /(\d+\.\d*)|(\d*\.\d+)|(\d+)|([a-zA-Z]+)|(.)/g;
+	const pattern = /(\d+\.\d*)|(\d*\.\d+)|(\d+)|([a-zA-Z0-9_]+)|(.)/g;
 
 	const infixExpression = (expression.match(pattern) || [])
 		.filter((token) => !isWhitespace(token))
@@ -114,13 +114,13 @@ function convert(infixExpression: string[]): string[] {
 			return;
 		}
 
-		if (isNumber(token)) {
-			postfixExpression.push(parseFloat(token));
+		if (isConstant(token)) {
+			postfixExpression.push(token);
 			return;
 		}
 
-		if (isConstant(token)) {
-			postfixExpression.push(token);
+		if (isNumber(token)) {
+			postfixExpression.push(parseFloat(token));
 			return;
 		}
 
@@ -236,13 +236,13 @@ function resolve(postfixExpression: string[]): number {
 			return;
 		}
 
-		if (isNumber(token)) {
-			evaluationStack.push(token);
+		if (isConstant(token)) {
+			evaluationStack.push(constants[token]);
 			return;
 		}
 
-		if (isConstant(token)) {
-			evaluationStack.push(constants[token]);
+		if (isNumber(token)) {
+			evaluationStack.push(token);
 			return;
 		}
 

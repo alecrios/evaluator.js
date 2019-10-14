@@ -59,8 +59,8 @@ describe('Evaluator.parse()', () => {
 		expect(parse('a 0 Bc 12 DeF .3 gHiJ 4. kLmNo 5.6 PqRsTu 7.89 VwXyZaB 01.2 cDeFgHiJ 45.67')).to.eql(['A', '0', 'BC', '12', 'DEF', '.3', 'GHIJ', '4.', 'KLMNO', '5.6', 'PQRSTU', '7.89', 'VWXYZAB', '01.2', 'CDEFGHIJ', '45.67']);
 	});
 
-	it('distinguish words from numbers without whitespace', () => {
-		expect(parse('a0Bc12DeF.3gHiJ4.kLmNo5.6PqRsTu7.89VwXyZaB01.2cDeFgHiJ45.67')).to.eql(['A', '0', 'BC', '12', 'DEF', '.3', 'GHIJ', '4.', 'KLMNO', '5.6', 'PQRSTU', '7.89', 'VWXYZAB', '01.2', 'CDEFGHIJ', '45.67']);
+	it('identify words with numbers and underscores', () => {
+		expect(parse('aa1 a1a a_1 _a1 a1_ a__ __a _a_')).to.eql(['AA1', 'A1A', 'A_1', '_A1', 'A1_', 'A__', '__A', '_A_']);
 	});
 
 	it('identify method components', () => {
@@ -352,6 +352,18 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'atanh(-1)', result: -Infinity },
 		{ string: 'atanh(-1) + 4', result: -Infinity },
 		{ string: 'hypot(3, 4, 5)', result: 7.07106781 },
+		{ string: 'LN2', result: 0.69314718 },
+		{ string: 'LN10', result: 2.30258509 },
+		{ string: 'log2e', result: 1.44269504 },
+		{ string: 'log10E', result: 0.43429448 },
+		{ string: 'PHI', result: 1.61803399 },
+		{ string: 'sqrt1_2', result: 0.70710678 },
+		{ string: 'sqrt2', result: 1.41421356 },
+		{ string: 'atan2(15, 90)', result: 0.16514868 },
+		{ string: 'expm1(-1)', result: -0.63212056 },
+		{ string: 'log1p(1)', result: 0.69314718 },
+		{ string: 'log10(2)', result: 0.30103 },
+		{ string: 'log2(1024)', result: 10 },
 	];
 
 	tests.forEach((test) => {
