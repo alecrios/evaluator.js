@@ -338,6 +338,8 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'sum(5, -2)', result: 3 },
 		{ string: 'add(4, sum(2, 3, 4))', result: 13 },
 		{ string: 'subtract(-4, sum(-2, -3, sqrt(16)))', result: -3 },
+		{ string: 'sqrt(4 ^ -2)', result: 0.25 },
+		{ string: 'sum(2^2, -2, 2 * 2, - -2, -(2), - (-2), (2)) ^ 2', result: 100 },
 	];
 
 	tests.forEach((test) => {
@@ -352,6 +354,9 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'add(4)', error: 'Insufficient arguments for function: ADD' },
 		{ string: 'divide(4 - 2)', error: 'Insufficient arguments for function: DIVIDE' },
 		{ string: 'subtract(+)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(-)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(/)', error: 'Misused operator: /' },
+		{ string: 'subtract(*)', error: 'Misused operator: *' },
 		{ string: 'subtract(6,)', error: 'Insufficient arguments for function: SUBTRACT' },
 		{ string: 'subtract(,6)', error: 'Insufficient arguments for function: SUBTRACT' },
 		{ string: 'subtract(,6,)', error: 'Insufficient arguments for function: SUBTRACT' },
@@ -399,6 +404,13 @@ describe('Evaluator.evaluate()', () => {
 		{ string: '3 / subtract', error: 'Insufficient arguments for function: SUBTRACT' },
 		{ string: 'pow(3', error: 'Mismatched parentheses' },
 		{ string: 'sum()', error: 'Insufficient arguments for function: SUM' },
+		{ string: ', sum(4)', error: 'Invalid token: ,' },
+		{ string: '4 sum(4)', error: 'Insufficient operators' },
+		{ string: 'add subtract divide', error: 'Misused function: ADD' },
+		{ string: '((', error: 'Mismatched parentheses' },
+		{ string: '))', error: 'Mismatched parentheses' },
+		{ string: 'add 3', error: 'Misused function: ADD' },
+		{ string: 'add(3,', error: 'Mismatched parentheses' },
 	];
 
 	errorTests.forEach((test) => {
