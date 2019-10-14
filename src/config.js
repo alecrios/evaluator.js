@@ -26,11 +26,12 @@ const constants = {
 	// 'LOG10E': Math.LOG10E,
 	'PHI': (1 + Math.sqrt(5)) / 2,
 	'PI': Math.PI,
+	// 'SQRT1_2': Math.SQRT1_2,
 	// 'SQRT2': Math.SQRT2,
 	'TAU': 2 * Math.PI,
 };
 
-const functions = {
+const methods = {
 	'ABS': (x) => Math.abs(x),
 	'ACOS': (x) => Math.acos(x),
 	'ACOSH': (x) => Math.acosh(x),
@@ -73,4 +74,4 @@ const functions = {
 	'TANH': (x) => Math.tanh(x),
 };
 
-export { symbols, operators, constants, functions }
+export { symbols, operators, constants, methods }

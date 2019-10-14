@@ -63,7 +63,7 @@ describe('Evaluator.parse()', () => {
 		expect(parse('a0Bc12DeF.3gHiJ4.kLmNo5.6PqRsTu7.89VwXyZaB01.2cDeFgHiJ45.67')).to.eql(['A', '0', 'BC', '12', 'DEF', '.3', 'GHIJ', '4.', 'KLMNO', '5.6', 'PQRSTU', '7.89', 'VWXYZAB', '01.2', 'CDEFGHIJ', '45.67']);
 	});
 
-	it('identify function components', () => {
+	it('identify method components', () => {
 		expect(parse('sqrt(16) min(4, 7, -2) sin(10)')).to.eql(['SQRT', '(', '16', ')', 'MIN', '(', '4', ',', '7', ',', '-', '2', ')', 'SIN', '(', '10', ')']);
 	});
 });
@@ -146,7 +146,7 @@ describe('Evaluator.convert()', () => {
 		expect(convert(['5', '+', '-', '-', '0'])).to.eql([5, 0, '_NEG', '_NEG', '_ADD']);
 	});
 
-	it('process functions', () => {
+	it('process methods', () => {
 		expect(convert(['ADD', '(', '5', ',', '1', ')'])).to.eql([5, 1, 'ADD:2']);
 		expect(convert(['SUBTRACT', '(', '14', ',', '2', ')'])).to.eql([14, 2, 'SUBTRACT:2']);
 		expect(convert(['MULTIPLY', '(', '4', ',', '2', ')', '+', 'DIVIDE', '(', '9', ',', '3', ')'])).to.eql([4, 2, 'MULTIPLY:2', 9, 3, 'DIVIDE:2', '_ADD']);
@@ -160,11 +160,11 @@ describe('Evaluator.resolve()', () => {
 		expect(() => resolve([])).to.throw(Error, 'No operations');
 	});
 
-	it('throw error for insufficient function arguments', () => {
-		expect(() => resolve(['SQRT'])).to.throw(Error, 'Insufficient arguments for function: SQRT');
-		expect(() => resolve(['ADD'])).to.throw(Error, 'Insufficient arguments for function: ADD');
-		expect(() => resolve([8, 'MULTIPLY'])).to.throw(Error, 'Insufficient arguments for function: MULTIPLY');
-		expect(() => resolve([4, 'SQRT', 'MULTIPLY'])).to.throw(Error, 'Insufficient arguments for function: MULTIPLY');
+	it('throw error for insufficient method arguments', () => {
+		expect(() => resolve(['SQRT'])).to.throw(Error, 'Insufficient arguments for method: SQRT');
+		expect(() => resolve(['ADD'])).to.throw(Error, 'Insufficient arguments for method: ADD');
+		expect(() => resolve([8, 'MULTIPLY'])).to.throw(Error, 'Insufficient arguments for method: MULTIPLY');
+		expect(() => resolve([4, 'SQRT', 'MULTIPLY'])).to.throw(Error, 'Insufficient arguments for method: MULTIPLY');
 	});
 
 	it('throw error for insufficient operands', () => {
@@ -361,22 +361,22 @@ describe('Evaluator.evaluate()', () => {
 	});
 
 	const errorTests = [
-		{ string: 'sqrt()', error: 'Insufficient arguments for function: SQRT' },
-		{ string: 'multiply()', error: 'Insufficient arguments for function: MULTIPLY' },
-		{ string: 'add(4)', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'divide(4 - 2)', error: 'Insufficient arguments for function: DIVIDE' },
-		{ string: 'subtract(+)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(-)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'sqrt()', error: 'Insufficient arguments for method: SQRT' },
+		{ string: 'multiply()', error: 'Insufficient arguments for method: MULTIPLY' },
+		{ string: 'add(4)', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'divide(4 - 2)', error: 'Insufficient arguments for method: DIVIDE' },
+		{ string: 'subtract(+)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(-)', error: 'Insufficient arguments for method: SUBTRACT' },
 		{ string: 'subtract(/)', error: 'Misused operator: /' },
 		{ string: 'subtract(*)', error: 'Misused operator: *' },
-		{ string: 'subtract(6,)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(,6)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(,6,)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(6,,)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(,,6)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(,,6,,)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(,)', error: 'Insufficient arguments for function: SUBTRACT' },
-		{ string: 'subtract(,,,)', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: 'subtract(6,)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(,6)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(,6,)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(6,,)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(,,6)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(,,6,,)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(,)', error: 'Insufficient arguments for method: SUBTRACT' },
+		{ string: 'subtract(,,,)', error: 'Insufficient arguments for method: SUBTRACT' },
 		{ string: 'add(', error: 'Mismatched parentheses' },
 		{ string: 'add(,', error: 'Mismatched parentheses' },
 		{ string: 'add(4', error: 'Mismatched parentheses' },
@@ -387,41 +387,41 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'subtract(16, 2) 4', error: 'Insufficient operators' },
 		{ string: '3 divide(10, 5)', error: 'Insufficient operators' },
 		{ string: 'sqrt(16) add(4, 3)', error: 'Insufficient operators' },
-		{ string: 'add(4, 2) divide(8)', error: 'Insufficient arguments for function: DIVIDE' },
-		{ string: '4 + divide()', error: 'Insufficient arguments for function: DIVIDE' },
+		{ string: 'add(4, 2) divide(8)', error: 'Insufficient arguments for method: DIVIDE' },
+		{ string: '4 + divide()', error: 'Insufficient arguments for method: DIVIDE' },
 		{ string: '8 add(2, 4)', error: 'Insufficient operators' },
-		{ string: '8 add(2)', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'sqrt(25) add(4)', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'add(4, 9) - add(1, 2) multiply(2)', error: 'Insufficient arguments for function: MULTIPLY' },
-		{ string: 'multiply(sqrt(9))', error: 'Insufficient arguments for function: MULTIPLY' },
-		{ string: 'multiply(add(4))', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'multiply(add(4), 7)', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'multiply(add(4, 7))', error: 'Insufficient arguments for function: MULTIPLY' },
-		{ string: 'add(,sqrt(25))', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'add(,divide(2))', error: 'Insufficient arguments for function: DIVIDE' },
-		{ string: 'add(,divide(2, 4))', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'add(divide(2, 4),)', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'add(divide(2, 4),,,)', error: 'Insufficient arguments for function: ADD' },
-		{ string: '4 + subtract(4, add()', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'divide(9.2, add(sqrt(25)))', error: 'Insufficient arguments for function: ADD' },
-		{ string: 'add', error: 'Insufficient arguments for function: ADD' },
-		{ string: '(multiply)', error: 'Misused function: MULTIPLY' },
-		{ string: '5 divide 4', error: 'Misused function: DIVIDE' },
-		{ string: '2 add 4', error: 'Misused function: ADD' },
-		{ string: 'add(subtract)', error: 'Misused function: SUBTRACT' },
-		{ string: 'add(subtract, 4)', error: 'Misused function: SUBTRACT' },
-		{ string: 'add(subtract(10, 3 add 4), 4)', error: 'Misused function: ADD' },
-		{ string: 'subtract 7 4', error: 'Misused function: SUBTRACT' },
-		{ string: 'subtract + 2', error: 'Misused function: SUBTRACT' },
-		{ string: '3 / subtract', error: 'Insufficient arguments for function: SUBTRACT' },
+		{ string: '8 add(2)', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'sqrt(25) add(4)', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'add(4, 9) - add(1, 2) multiply(2)', error: 'Insufficient arguments for method: MULTIPLY' },
+		{ string: 'multiply(sqrt(9))', error: 'Insufficient arguments for method: MULTIPLY' },
+		{ string: 'multiply(add(4))', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'multiply(add(4), 7)', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'multiply(add(4, 7))', error: 'Insufficient arguments for method: MULTIPLY' },
+		{ string: 'add(,sqrt(25))', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'add(,divide(2))', error: 'Insufficient arguments for method: DIVIDE' },
+		{ string: 'add(,divide(2, 4))', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'add(divide(2, 4),)', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'add(divide(2, 4),,,)', error: 'Insufficient arguments for method: ADD' },
+		{ string: '4 + subtract(4, add()', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'divide(9.2, add(sqrt(25)))', error: 'Insufficient arguments for method: ADD' },
+		{ string: 'add', error: 'Insufficient arguments for method: ADD' },
+		{ string: '(multiply)', error: 'Misused method: MULTIPLY' },
+		{ string: '5 divide 4', error: 'Misused method: DIVIDE' },
+		{ string: '2 add 4', error: 'Misused method: ADD' },
+		{ string: 'add(subtract)', error: 'Misused method: SUBTRACT' },
+		{ string: 'add(subtract, 4)', error: 'Misused method: SUBTRACT' },
+		{ string: 'add(subtract(10, 3 add 4), 4)', error: 'Misused method: ADD' },
+		{ string: 'subtract 7 4', error: 'Misused method: SUBTRACT' },
+		{ string: 'subtract + 2', error: 'Misused method: SUBTRACT' },
+		{ string: '3 / subtract', error: 'Insufficient arguments for method: SUBTRACT' },
 		{ string: 'pow(3', error: 'Mismatched parentheses' },
-		{ string: 'sum()', error: 'Insufficient arguments for function: SUM' },
+		{ string: 'sum()', error: 'Insufficient arguments for method: SUM' },
 		{ string: ', sum(4)', error: 'Invalid token: ,' },
 		{ string: '4 sum(4)', error: 'Insufficient operators' },
-		{ string: 'add subtract divide', error: 'Misused function: ADD' },
+		{ string: 'add subtract divide', error: 'Misused method: ADD' },
 		{ string: '((', error: 'Mismatched parentheses' },
 		{ string: '))', error: 'Mismatched parentheses' },
-		{ string: 'add 3', error: 'Misused function: ADD' },
+		{ string: 'add 3', error: 'Misused method: ADD' },
 		{ string: 'add(3,', error: 'Mismatched parentheses' },
 	];
 

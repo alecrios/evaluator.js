@@ -1,8 +1,8 @@
-import { symbols, operators, constants, functions } from './config';
+import { symbols, operators, constants, methods } from './config';
 
 const isSymbol = (token: string): boolean => Object.keys(symbols).includes(token);
 const isOperator = (token: string): boolean => Object.keys(operators).includes(token);
-const isFunction = (token: string): boolean => Object.keys(functions).includes(token);
+const isMethod = (token: string): boolean => Object.keys(methods).includes(token);
 const isConstant = (token: string): boolean => Object.keys(constants).includes(token);
 const isNumber = (token: string): boolean => /(\d+\.\d*)|(\d*\.\d+)|(\d+)/.test(token);
 const isOpenParenthesis = (token: string): boolean => /\(/.test(token);
@@ -86,7 +86,7 @@ function parse(expression: string): string[] {
  * @throws {Error} Misused operator: <token>.
  * @throws {Error} Mismatched parentheses.
  * @throws {Error} Invalid token: <token>.
- * @throws {Error} Insufficient arguments for function: <token>.
+ * @throws {Error} Insufficient arguments for method: <token>.
  *
  * @returns {string[]} The array of tokens in postfix notation.
  */
@@ -98,17 +98,17 @@ function convert(infixExpression: string[]): string[] {
 	const operatorStack = [];
 	const arityStack = [];
 	const postfixExpression = [];
-	let functionIsNewlyDeclared = false;
+	let methodIsNewlyDeclared = false;
 
 	infixExpression.forEach((token, index) => {
-		if (functionIsNewlyDeclared && !isOpenParenthesis(token)) {
-			throw Error(`Misused function: ${operatorStack[operatorStack.length - 1]}`);
+		if (methodIsNewlyDeclared && !isOpenParenthesis(token)) {
+			throw Error(`Misused method: ${operatorStack[operatorStack.length - 1]}`);
 		}
 
-		functionIsNewlyDeclared = false;
+		methodIsNewlyDeclared = false;
 
-		if (isFunction(token)) {
-			functionIsNewlyDeclared = true;
+		if (isMethod(token)) {
+			methodIsNewlyDeclared = true;
 			operatorStack.push(token);
 			arityStack.push(1);
 			return;
@@ -170,12 +170,12 @@ function convert(infixExpression: string[]): string[] {
 
 			operatorStack.pop();
 
-			if (isFunction(operatorStack[operatorStack.length - 1])) {
-				const functionName = operatorStack[operatorStack.length - 1];
+			if (isMethod(operatorStack[operatorStack.length - 1])) {
+				const method = operatorStack[operatorStack.length - 1];
 				const argumentCount = arityStack.pop();
 
-				if (argumentCount < functions[functionName].length) {
-					throw Error(`Insufficient arguments for function: ${functionName}`);
+				if (argumentCount < methods[method].length) {
+					throw Error(`Insufficient arguments for method: ${method}`);
 				}
 
 				postfixExpression.push(`${operatorStack.pop()}:${argumentCount}`);
@@ -206,7 +206,7 @@ function convert(infixExpression: string[]): string[] {
  * @param {string[]} postfixExpression The array of tokens in postfix notation.
  *
  * @throws {Error} No operations.
- * @throws {Error} Insufficient arguments for function: <token>.
+ * @throws {Error} Insufficient arguments for method: <token>.
  * @throws {Error} Insufficient operands for operator: <token>.
  * @throws {Error} Division by zero.
  * @throws {Error} Insufficient operators.
@@ -221,17 +221,17 @@ function resolve(postfixExpression: string[]): number {
 	const evaluationStack = [];
 
 	postfixExpression.forEach((token) => {
-		if (isFunction(String(token).split(':')[0])) {
-			const [functionName, argumentCount] = token.split(':');
-			const fn = functions[functionName];
-			const isVariadic = fn.length === 0;
-			const requiredArguments = isVariadic ? 1 : fn.length;
+		if (isMethod(String(token).split(':')[0])) {
+			const [methodName, argumentCount] = token.split(':');
+			const method = methods[methodName];
+			const isVariadic = method.length === 0;
+			const requiredArguments = isVariadic ? 1 : method.length;
 
 			if (evaluationStack.length < requiredArguments) {
-				throw Error(`Insufficient arguments for function: ${token}`);
+				throw Error(`Insufficient arguments for method: ${token}`);
 			}
 
-			const result = fn(...evaluationStack.splice(isVariadic ? -argumentCount : -fn.length));
+			const result = method(...evaluationStack.splice(isVariadic ? -argumentCount : -method.length));
 			evaluationStack.push(result);
 			return;
 		}
@@ -281,7 +281,7 @@ function resolve(postfixExpression: string[]): number {
  * @throws {Error} Mismatched parentheses.
  * @throws {Error} Invalid token: <token>.
  * @throws {Error} No operations.
- * @throws {Error} Insufficient arguments for function: <token>.
+ * @throws {Error} Insufficient arguments for method: <token>.
  * @throws {Error} Insufficient operands for operator: <token>.
  * @throws {Error} Division by zero.
  * @throws {Error} Insufficient operators.
