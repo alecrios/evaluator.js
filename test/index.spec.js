@@ -78,10 +78,12 @@ describe('Evaluator.convert()', () => {
 		expect(() => convert(['*'])).to.throw(Error, 'Misused operator: *');
 		expect(() => convert(['/'])).to.throw(Error, 'Misused operator: /');
 		expect(() => convert(['%'])).to.throw(Error, 'Misused operator: %');
+		expect(() => convert(['!'])).to.throw(Error, 'Misused operator: !');
 		expect(() => convert(['2', '-', '^'])).to.throw(Error, 'Misused operator: ^');
 		expect(() => convert(['2', '-', '*'])).to.throw(Error, 'Misused operator: *');
 		expect(() => convert(['2', '-', '/'])).to.throw(Error, 'Misused operator: /');
 		expect(() => convert(['2', '-', '%'])).to.throw(Error, 'Misused operator: %');
+		expect(() => convert(['!', '2'])).to.throw(Error, 'Misused operator: !');
 	});
 
 	it('throw error for an invalid token', () => {
@@ -296,6 +298,10 @@ describe('Evaluator.evaluate()', () => {
 		{ string: '4.1 * 18.2 + (12.8 / 16.3)', result: 75.40527607 },
 		{ string: '.211 * 0.343 * 00.984 * 4.', result: 0.28486013 },
 		{ string: '(4 ^ 4) / 3 % 2', result: 1.33333333 },
+		{ string: '4!', result: 24 },
+		{ string: '2 * 4!', result: 48 },
+		{ string: '2 + 4!', result: 26 },
+		{ string: '-4!', result: -24 },
 		{ string: 'pi', result: 3.14159265 },
 		{ string: '2 * PI * 10', result: 62.83185307 },
 		{ string: 'PI * 10 ^ 2', result: 314.15926536 },
@@ -316,6 +322,9 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'add(4, 9)', result: 13 },
 		{ string: 'subtract(16, 20)', result: -4 },
 		{ string: 'pow(4, 2)', result: 16 },
+		{ string: 'factorial(4)', result: 24 },
+		{ string: 'multiply(factorial(4), 2)', result: 48 },
+		{ string: 'factorial(-2)', result: NaN },
 		{ string: 'add(sqrt(25), 2)', result: 7 },
 		{ string: 'add(add(5, 1), 19) - 5', result: 20 },
 		{ string: 'multiply(3, 4) ^ 2', result: 144 },
@@ -428,6 +437,7 @@ describe('Evaluator.evaluate()', () => {
 		{ string: '3 / subtract', error: 'Insufficient arguments for method: SUBTRACT' },
 		{ string: 'pow(3', error: 'Mismatched parentheses' },
 		{ string: 'sum()', error: 'Insufficient arguments for method: SUM' },
+		{ string: 'factorial()', error: 'Insufficient arguments for method: FACTORIAL' },
 		{ string: ', sum(4)', error: 'Invalid token: ,' },
 		{ string: '4 sum(4)', error: 'Insufficient operators' },
 		{ string: 'add subtract divide', error: 'Misused method: ADD' },
