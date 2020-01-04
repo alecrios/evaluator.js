@@ -61,7 +61,6 @@ evaluate('-e ^ -2');           // -0.13533528
 - `*` - Multiply
 - `/` - Divide
 - `^` - Power
-- `!` - Factorial
 - `%` - Modulo
 - `(` - Begin Group
 - `)` - End Group
