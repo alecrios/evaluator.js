@@ -1,6 +1,5 @@
 const symbols = {
 	'^': { infix: '_POW' },
-	'!': { infix: '_FAC' },
 	'*': { infix: '_MUL' },
 	'/': { infix: '_DIV' },
 	'%': { infix: '_MOD' },
@@ -14,7 +13,6 @@ const operators = {
 	'_POW': { name: 'Power', precedence: 4, associativity: 'right', method: (x, y) => x ** y },
 	'_POS': { name: 'Positive', precedence: 3, associativity: 'right', method: (x) => x },
 	'_NEG': { name: 'Negative', precedence: 3, associativity: 'right', method: (x) => -x },
-	'_FAC': { name: 'Factorial', precedence: 3, associativity: 'left', method: factorial },
 	'_MUL': { name: 'Multiply', precedence: 2, associativity: 'left', method: (x, y) => x * y },
 	'_DIV': { name: 'Divide', precedence: 2, associativity: 'left', method: (x, y) => x / y },
 	'_MOD': { name: 'Modulo', precedence: 2, associativity: 'left', method: (x, y) => x % y },
