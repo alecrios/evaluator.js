@@ -61,6 +61,7 @@ evaluate('-e ^ -2');           // -0.13533528
 - `*` - Multiply
 - `/` - Divide
 - `^` - Power
+- `!` - Factorial
 - `%` - Modulo
 - `(` - Begin Group
 - `)` - End Group
@@ -97,6 +98,7 @@ evaluate('-e ^ -2');           // -0.13533528
 - `DIVIDE(x, y)` - Returns the quotient of two numbers.
 - `EXP(x)` - Returns E to the power of x.
 - `EXPM1(x)` - Returns subtracting 1 from EXP(x).
+- `FACTORIAL(x)` - Returns the factorial of x.
 - `FLOOR(x)` - Returns the largest integer less than or equal to a number.
 - `HYPOT(x[, y[, ...]])` - Returns the square root of the sum of squares of the arguments.
 - `LOG(x)` - Returns the natural logarithm of a number.
