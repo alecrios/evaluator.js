@@ -367,6 +367,7 @@ describe('Evaluator.evaluate()', () => {
 		{ string: 'log1p(1)', result: 0.69314718 },
 		{ string: 'log10(2)', result: 0.30103 },
 		{ string: 'log2(1024)', result: 10 },
+		{ string: '1 + 0 / 6', result: 1 },
 	];
 
 	tests.forEach((test) => {

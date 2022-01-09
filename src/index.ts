@@ -252,7 +252,7 @@ function resolve(postfixExpression: string[]): number {
 			throw Error(`Insufficient operands for operator: ${operator.name}`);
 		}
 
-		if (token === '_DIV' && evaluationStack[1] === 0) {
+		if (token === '_DIV' && evaluationStack[evaluationStack.length - 1] === 0) {
 			throw Error('Division by zero');
 		}
 
